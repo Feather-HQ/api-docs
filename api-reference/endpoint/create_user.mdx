@@ -1,0 +1,9 @@
+---
+title: "Create a User"
+api: "POST https://api.featherhq.com/api/user"
+description: "This endpoint gets or creates a new user."
+---
+
+<ParamField body="user_age" type="integer" default="0" required>
+  The age of the user. Cannot be less than 0
+</ParamField>

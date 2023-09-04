@@ -1,13 +1,13 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
+  "name": "Feather Docs",
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
   },
   "favicon": "/favicon.png",
   "colors": {
-    "primary": "#9563FF",
+    "primary": "#1653F0",
     "light": "#AE87FF",
     "dark": "#0D001D",
     "background": {
@@ -48,17 +48,13 @@
     {
       "name": "Blog",
       "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "url": "https://featherhq.com/blog"
     }
   ],
   "navigation": [
     {
       "group": "Get Started",
       "pages": ["introduction", "quickstart", "development"]
-    },
-    {
-      "group": "Essentials",
-      "pages": ["essentials/markdown", "essentials/code", "essentials/images", "essentials/settings", "essentials/navigation"]
     },
     {
       "group": "API Documentation",
@@ -70,7 +66,19 @@
         "api-reference/endpoint/get",
         "api-reference/endpoint/create",
         "api-reference/endpoint/update",
-        "api-reference/endpoint/delete"
+        "api-reference/endpoint/delete",
+        "api-reference/endpoint/create_user"
+      ]
+    },
+    {
+      "group": "Funding Endpoints",
+      "pages": [
+        "funding/add-ach-instruction",
+        "funding/get-ach-instruction-status",
+        "funding/delete-ach-instruction",
+        "funding/create-money-movement",
+        "funding/get-money-movement-status",
+        "funding/get-withdrawable-cash-amount"
       ]
     }
   ],

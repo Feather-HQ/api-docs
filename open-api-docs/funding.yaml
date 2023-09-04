@@ -1,0 +1,218 @@
+openapi: 3.0.0
+info:
+  title: Financial API
+  version: 1.0.0
+paths:
+  /funding/linking:
+    post:
+      summary: Add ACH instruction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AchInstruction"
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /funding/linking/{account_id}/{ach_id}:
+    get:
+      summary: Get ACH instruction status
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: ach_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AchInstructionStatus"
+    delete:
+      summary: Delete ACH instruction
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: ach_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /funding/money_movement:
+    post:
+      summary: Create money movement
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MoneyMovementRequest"
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiResponse"
+  /funding/money_movement/{account_id}/{mm_id}:
+    get:
+      summary: Get money movement status
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: mm_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MoneyMovementStatus"
+  /funding/withdrawable_cash/{account_id}:
+    get:
+      summary: Get withdrawable cash amount
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Success response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WithdrawableCashAmount"
+components:
+  schemas:
+    AchInstruction:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account ID for linking the ACH instruction
+        bank_name:
+          type: string
+          description: Name of the bank
+        routing_number:
+          type: string
+          description: Bank's routing number
+        account_number:
+          type: string
+          description: Bank account number
+        bank_account_type:
+          type: string
+          enum: ["Checking", "Savings"]
+          description: Type of bank account
+      required:
+        - account_id
+        - bank_name
+        - routing_number
+        - account_number
+        - bank_account_type
+    ApiResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        status_code:
+          type: integer
+    AchInstructionStatus:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account ID linked to the ACH instruction
+        ach_id:
+          type: string
+          description: ACH instruction ID
+        requires_manual_verification:
+          type: boolean
+          description: Indicates if manual verification is required
+        status:
+          type: string
+          description: Current status of the ACH instruction
+        ach_instruction_name:
+          type: string
+          description: Name of the ACH instruction
+    MoneyMovementRequest:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account ID for money movement
+        direction:
+          type: string
+          enum: ["D", "W"]
+          description: Direction of money movement (Deposit or Withdrawal)
+        ach_id:
+          type: string
+          description: ACH instruction ID for the movement
+        amount:
+          type: string
+          description: Amount for the money movement
+      required:
+        - account_id
+        - direction
+        - ach_id
+        - amount
+    MoneyMovementStatus:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account ID linked to the money movement
+        mm_id:
+          type: string
+          description: Money movement ID
+        ach_instruction_id:
+          type: string
+          description: ACH instruction ID for the movement
+        amount:
+          type: string
+          description: Amount for the money movement
+        status:
+          type: string
+          description: Current status of the money movement
+        direction:
+          type: string
+          description: Direction of the money movement (Deposit or Withdrawal)
+    WithdrawableCashAmount:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Account ID linked to withdrawable cash
+        withdrawable_cash:
+          type: string
+          description: Amount of withdrawable cash
