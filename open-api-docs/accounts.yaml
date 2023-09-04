@@ -1,0 +1,404 @@
+---
+openapi: 3.0.0
+info:
+  title: Account API
+  version: 1.0.0
+servers:
+  - url: "https://sandbox.featherhq.com"
+paths:
+  /accounts:
+    post:
+      summary: Open a retirement account
+      description: |
+        Open a retirement account for a client. The account will be opened with
+        the specified account type and the account holder will be the client
+        associated with the specified external ID.
+      requestBody:
+        description: JSON request body for account opening
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OpenAccountRequest"
+      responses:
+        "200":
+          description: Account opening successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OpenAccountResponse"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  "/accounts/{account_id}":
+    get:
+      summary: Get account details by account ID
+      description: |
+        Get details for a retirement account by account ID. The account details
+        include the account holder information, account balance, recent
+        transactions, and beneficiary information.
+      parameters:
+        - in: path
+          name: account_id
+          required: true
+          description: Unique identifier for the account
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountDetails"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  "/accounts/pending_tasks/{account_id}":
+    get:
+      summary: Get pending tasks for an account by account ID
+      description: |
+        Get pending tasks for a retirement account by account ID. The pending
+        tasks include any tasks that need to be completed before the account can
+        be opened.
+      parameters:
+        - in: path
+          name: account_id
+          required: true
+          description: Unique identifier for the account
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PendingTasks"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  "/accounts/account_status/{account_id}":
+    get:
+      summary: Get account status by account ID
+      description: |
+        Get the status of a retirement account by account ID. The account status
+        can be one of the following:
+        - `active`: The account is active.
+        - `inactive`: The account is inactive.
+        - `pending`: The account is pending.
+      parameters:
+        - in: path
+          name: account_id
+          required: true
+          description: Unique identifier for the account
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountStatus"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    Name:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: First name of the person
+        middle_name:
+          type: string
+          description: Middle name of the person
+        last_name:
+          type: string
+          description: Last name of the person
+        salutation:
+          type: string
+          description: Salutation or title (e.g., Mr., Mrs., Dr.)
+      required:
+        - first_name
+        - last_name
+    PhoneNumber:
+      type: object
+      properties:
+        phone_type:
+          type: string
+          description: Type of phone number (e.g., Mobile, Home, Work)
+        number:
+          type: string
+          description: Phone number
+        country:
+          type: string
+          description: Country code for the phone number
+      required:
+        - phone_type
+        - number
+        - country
+    Address:
+      type: object
+      properties:
+        street_1:
+          type: string
+          description: First line of the street address
+        street_2:
+          type: string
+          description: Second line of the street address
+        city:
+          type: string
+          description: City or locality
+        state:
+          type: string
+          description: State or province
+        postal_code:
+          type: string
+          description: Postal code or ZIP code
+        country:
+          type: string
+          description: Country name
+        address_type:
+          type: string
+          description: Type of address (e.g., Residential, Mailing)
+      required:
+        - street_1
+        - city
+        - state
+        - postal_code
+        - country
+    Transaction:
+      type: object
+      properties:
+        transaction_id:
+          type: string
+          description: Unique identifier for the transaction
+        date:
+          type: string
+          format: date-time
+          description: Date and time of the transaction
+        description:
+          type: string
+          description: Description or details of the transaction
+        amount:
+          type: number
+          description: Transaction amount
+        currency:
+          type: string
+          description: Currency in which the transaction amount is denominated
+      required:
+        - transaction_id
+        - date
+        - description
+        - amount
+        - currency
+    OpenAccountRequest:
+      type: object
+      properties:
+        external_id:
+          type: string
+          maxLength: 64
+        prefix:
+          type: string
+          minLength: 3
+          maxLength: 3
+      required:
+        - external_id
+        - prefix
+    OpenAccountResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    AccountDetails:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Unique identifier for the account
+        account_type:
+          type: string
+          description: Type of the account (e.g., Checking, Savings, Investment, etc.)
+        account_balance:
+          type: number
+          description: Current account balance
+        currency:
+          type: string
+          description: Currency in which the account balance is denominated
+        account_holder:
+          type: object
+          properties:
+            name:
+              $ref: "#/components/schemas/Name"
+            date_of_birth:
+              type: string
+              format: date
+              description: Date of birth of the account holder
+            contact_information:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the account holder
+                phone:
+                  $ref: "#/components/schemas/PhoneNumber"
+            address:
+              $ref: "#/components/schemas/Address"
+        transactions:
+          type: array
+          description: List of recent account transactions
+          items:
+            $ref: "#/components/schemas/Transaction"
+        beneficiary:
+          type: object
+          properties:
+            name:
+              $ref: "#/components/schemas/Name"
+            date_of_birth:
+              type: string
+              format: date
+              description: Date of birth of the beneficiary
+            relationship:
+              type: string
+              description: Relationship of the beneficiary to the account holder
+            contact_information:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Email address of the beneficiary
+                phone:
+                  $ref: "#/components/schemas/PhoneNumber"
+            address:
+              $ref: "#/components/schemas/Address"
+      required:
+        - account_id
+        - account_type
+        - account_balance
+        - currency
+        - account_holder
+    PendingTasks:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: Number of pending tasks
+        account_id:
+          type: string
+          description: Unique identifier for the account
+        pending_tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/PendingTask"
+      required:
+        - count
+        - account_id
+        - pending_tasks
+    AccountStatus:
+      type: object
+      properties:
+        account_id:
+          type: string
+          description: Unique identifier for the account
+        account_status:
+          type: string
+          description: Current account status (e.g., Active, Inactive, Pending)
+        account_state:
+          type: string
+          description: Additional account state information (e.g., Locked, Restricted)
+      required:
+        - account_id
+        - account_status
+    PendingTask:
+      type: object
+      properties:
+        action:
+          type: string
+          description: Action associated with the pending task (e.g., Approve, Review)
+        form_no:
+          type: string
+          description: Unique identifier for the form related to the task
+        is_online_task:
+          type: boolean
+          description: Indicates whether the task is an online task
+        form_name:
+          type: string
+          description: Name or description of the form
+        identification_url:
+          type: string
+          description: URL for accessing identification information related to the task
+        identification_url_expiry:
+          type: string
+          format: date-time
+          description: Expiry date and time for the identification URL
+      required:
+        - action
+        - form_no
+        - is_online_task
+        - form_name
+        - identification_url
+        - identification_url_expiry
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
