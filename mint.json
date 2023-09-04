@@ -8,7 +8,7 @@
   "favicon": "/favicon.png",
   "colors": {
     "primary": "#1653F0",
-    "light": "#AE87FF",
+    "light": "#70c6e6",
     "dark": "#0D001D",
     "background": {
       "dark": "#090014"
@@ -21,13 +21,10 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "url": "mailto:support@featherhq.com"
     }
   ],
-  "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
-  },
+
   "tabs": [
     {
       "name": "API Reference",
@@ -36,14 +33,14 @@
   ],
   "anchors": [
     {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
+      "name": "Website",
+      "icon": "globe",
+      "url": "https://featherhq.com"
     },
     {
-      "name": "Community",
-      "icon": "slack",
-      "url": "https://mintlify.com/community"
+      "name": "Company",
+      "icon": "linkedin",
+      "url": "https://www.linkedin.com/company/feather-hq"
     },
     {
       "name": "Blog",
@@ -54,55 +51,53 @@
   "navigation": [
     {
       "group": "Get Started",
-      "pages": ["introduction", "quickstart", "development"]
+      "pages": ["introduction", "getting-started", "development"]
     },
     {
       "group": "API Documentation",
-      "pages": ["api-reference/authentication"]
-    },
-    {
-      "group": "Endpoint Examples",
       "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/update",
-        "api-reference/endpoint/delete",
-        "api-reference/endpoint/create_user"
-      ]
-    },
-    {
-      "group": "Funding Endpoints",
-      "pages": [
-        "funding/add-ach-instruction",
-        "funding/get-ach-instruction-status",
-        "funding/delete-ach-instruction",
-        "funding/create-money-movement",
-        "funding/get-money-movement-status",
-        "funding/get-withdrawable-cash-amount"
+        "api-reference/authentication",
+        "api-reference/accounts",
+        "api-reference/funding",
+        "api-reference/trading"
       ]
     },
     {
       "group": "Account Endpoints",
       "pages": [
-        "accounts/open-a-retirement-account",
-        "accounts/get-account-details-by-account-id",
-        "accounts/get-pending-tasks-for-an-account-by-account-id",
-        "accounts/get-account-status-by-account-id"
+        "api-reference/endpoint/accounts/open-a-retirement-account",
+        "api-reference/endpoint/accounts/get-account-details",
+        "api-reference/endpoint/accounts/get-pending-tasks-for-an-account",
+        "api-reference/endpoint/accounts/get-account-status",
+        "api-reference/endpoint/accounts/get-documents"
+      ]
+    },
+    {
+      "group": "Funding Endpoints",
+      "pages": [
+        "api-reference/endpoint/funding/add-ach-instruction",
+        "api-reference/endpoint/funding/get-ach-instruction-status",
+        "api-reference/endpoint/funding/delete-ach-instruction",
+        "api-reference/endpoint/funding/create-money-movement",
+        "api-reference/endpoint/funding/get-money-movement-status",
+        "api-reference/endpoint/funding/get-withdrawable-cash-amount"
       ]
     },
     {
       "group": "Trading Endpoints",
       "pages": [
-        "trading/get-portfolio",
-        "trading/get-order-details",
-        "trading/place-order",
-        "trading/health-check"
+        "api-reference/endpoint/trading/get-portfolio",
+        "api-reference/endpoint/trading/get-order-details",
+        "api-reference/endpoint/trading/place-order",
+        "api-reference/endpoint/trading/health-check"
+      ]
+    },
+    {
+      "group": "Financial Data",
+      "pages": [
+        "api-reference/endpoint/financial-data/get-annual-ira-contribution-limits",
+        "api-reference/endpoint/financial-data/get-live-market-data"
       ]
     }
-  ],
-  "footerSocials": {
-    "twitter": "https://twitter.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
-  }
+  ]
 }

@@ -2,11 +2,15 @@
 openapi: 3.0.0
 info:
   title: Account API
+  description: |
+    The Account API allows you to open and manage retirement accounts for your
+    clients. You can use this API to open a retirement account, get account
+    details, get pending tasks for an account, and get the status of an account.
   version: 1.0.0
 servers:
   - url: "https://sandbox.featherhq.com"
 paths:
-  /accounts:
+  "/accounts":
     post:
       summary: Open a retirement account
       description: |
@@ -19,14 +23,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/OpenAccountRequest"
+              $ref: "#/components/schemas/AccountOpeningRequest"
       responses:
         "200":
           description: Account opening successful
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OpenAccountResponse"
+                $ref: "#/components/schemas/AccountOpeningResponse"
         "400":
           description: Bad request
           content:
@@ -41,7 +45,7 @@ paths:
                 $ref: "#/components/schemas/Error"
   "/accounts/{account_id}":
     get:
-      summary: Get account details by account ID
+      summary: Get account details
       description: |
         Get details for a retirement account by account ID. The account details
         include the account holder information, account balance, recent
@@ -80,7 +84,7 @@ paths:
                 $ref: "#/components/schemas/Error"
   "/accounts/pending_tasks/{account_id}":
     get:
-      summary: Get pending tasks for an account by account ID
+      summary: Get pending tasks for an account
       description: |
         Get pending tasks for a retirement account by account ID. The pending
         tasks include any tasks that need to be completed before the account can
@@ -119,7 +123,7 @@ paths:
                 $ref: "#/components/schemas/Error"
   "/accounts/account_status/{account_id}":
     get:
-      summary: Get account status by account ID
+      summary: Get account status
       description: |
         Get the status of a retirement account by account ID. The account status
         can be one of the following:
@@ -148,6 +152,42 @@ paths:
                 $ref: "#/components/schemas/Error"
         "404":
           description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  "/accounts/{account_id}/documents":
+    get:
+      summary: Get documents
+      description: "Retrieve a list of documents available for a specific account.\n\n
+      **Please note**: This endpoint is currently under migration and will be available soon."
+      parameters:
+        - in: path
+          name: account_id
+          required: true
+          description: The ID of the account for which documents are to be retrieved.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful response with a list of documents.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Document"
+        "400":
+          description: Bad request
           content:
             application/json:
               schema:
@@ -249,24 +289,21 @@ components:
         - description
         - amount
         - currency
-    OpenAccountRequest:
+    AccountOpeningRequest:
       type: object
       properties:
         external_id:
           type: string
-          maxLength: 64
+          description: The unique external ID for the user
         prefix:
           type: string
-          minLength: 3
-          maxLength: 3
-      required:
-        - external_id
-        - prefix
-    OpenAccountResponse:
-      type: object
-      properties:
-        message:
-          type: string
+          description: The account prefix (e.g., "XYZ")
+        customer:
+          $ref: "#/components/schemas/CustomerDetails"
+        accounts:
+          $ref: "#/components/schemas/AccountOpeningDetails"
+        documents:
+          $ref: "#/components/schemas/DocumentDetails"
     AccountDetails:
       type: object
       properties:
@@ -397,8 +434,69 @@ components:
         - form_name
         - identification_url
         - identification_url_expiry
+    CustomerDetails:
+      type: object
+      properties:
+        account_holder:
+          $ref: "#/components/schemas/AccountHolderDetails"
+    AccountOpeningDetails:
+      type: object
+      properties:
+        account_type:
+          type: string
+          description: The type of account (e.g., "TRAD_IRA", "ROTH_IRA")
+        other_properties:
+          type: string
+          description: Other account properties
+    DocumentDetails:
+      type: object
+      properties:
+        document_type:
+          type: string
+          description: The type of document
+        other_properties:
+          type: string
+          description: Other document properties
+    AccountHolderDetails:
+      type: object
+      properties:
+        first_name:
+          type: string
+          description: The first name of the account holder
+        middle_name:
+          type: string
+          description: The middle name of the account holder
+        last_name:
+          type: string
+          description: The last name of the account holder
+        salutation:
+          type: string
+          description: The salutation of the account holder
+    AccountOpeningResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: A response message indicating success or failure
     Error:
       type: object
       properties:
         message:
           type: string
+          description: A description of the error
+    Document:
+      type: object
+      properties:
+        document_id:
+          type: string
+          description: The unique identifier for the document.
+        document_name:
+          type: string
+          description: The name or title of the document.
+        document_type:
+          type: string
+          description: The type or category of the document.
+        upload_date:
+          type: string
+          format: date-time
+          description: The date and time when the document was uploaded.
