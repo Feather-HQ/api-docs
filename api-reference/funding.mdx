@@ -1,0 +1,72 @@
+---
+title: "Funding"
+description: "Funding API Overview"
+---
+
+The Funding API, also known as the Financial API, offers developers a comprehensive set of endpoints to manage financial transactions. This API enables you to handle various funding operations, including ACH (Automated Clearing House) instructions, money movements, and withdrawable cash checks. Whether you need to link bank accounts, initiate deposits or withdrawals, monitor transaction statuses, or retrieve available withdrawable cash amounts, the Funding API provides the necessary tools.
+
+## Key Features
+
+### 1. Add ACH Instruction
+
+- **Endpoint:** `POST /funding/linking`
+- **Description:** Link a bank account by adding a new ACH instruction.
+- **Use Case:** Use this endpoint to securely link a bank account to your application for funding or withdrawals.
+
+### 2. Get ACH Instruction Status
+
+- **Endpoint:** `GET /funding/linking/{account_id}/{ach_id}`
+- **Description:** Check the status of a linked ACH instruction.
+- **Use Case:** Monitor the status of ACH instructions to ensure successful linkage and verification.
+
+### 3. Delete ACH Instruction
+
+- **Endpoint:** `DELETE /funding/linking/{account_id}/{ach_id}`
+- **Description:** Delete a previously linked ACH instruction.
+- **Use Case:** Remove outdated or unwanted ACH instructions securely.
+
+### 4. Create Money Movement
+
+- **Endpoint:** `POST /funding/money_movement`
+- **Description:** Initiate a money movement, either a deposit or withdrawal.
+- **Use Case:** Facilitate financial transactions by creating deposits or withdrawals for linked bank accounts.
+
+### 5. Get Money Movement Status
+
+- **Endpoint:** `GET /funding/money_movement/{account_id}/{mm_id}`
+- **Description:** Check the status of a money movement transaction.
+- **Use Case:** Track the progress and completion of financial transactions.
+
+### 6. Get Withdrawable Cash Amount
+
+- **Endpoint:** `GET /funding/withdrawable_cash/{account_id}`
+- **Description:** Retrieve the available withdrawable cash amount for an account.
+- **Use Case:** Ensure that there is sufficient cash available for withdrawals.
+
+## Handling Responses
+
+- **Successful Responses:** Successful API calls will return a JSON response with an HTTP status code of 200. The response body will contain relevant information about the operation, such as confirmation messages, transaction IDs, and status updates.
+
+- **Error Responses:** In case of errors, the API will return an appropriate HTTP status code (e.g., 4xx or 5xx) along with an error message in the response body. Developers should handle error cases gracefully and take appropriate actions based on the error type.
+
+## Authentication
+
+To access the Funding API, developers must authenticate themselves using API keys or tokens. Please refer to the authentication documentation for details on obtaining and using authentication credentials.
+
+## Examples
+
+Developers can use the Funding API to enhance their applications with funding-related capabilities. Below are some examples of how to use the API:
+
+1. **Link a Bank Account:** Use the `POST /funding/linking` endpoint to securely link a user's bank account for funding or withdrawals.
+
+2. **Check ACH Instruction Status:** Utilize the `GET /funding/linking/{account_id}/{ach_id}` endpoint to monitor the status of ACH instructions.
+
+3. **Initiate Money Movement:** Use the `POST /funding/money_movement` endpoint to create deposits or withdrawals for linked bank accounts.
+
+4. **Check Money Movement Status:** Track the progress and completion of financial transactions using the `GET /funding/money_movement/{account_id}/{mm_id}` endpoint.
+
+5. **Retrieve Withdrawable Cash:** Use the `GET /funding/withdrawable_cash/{account_id}` endpoint to check the available withdrawable cash amount for an account.
+
+## Conclusion
+
+The Funding API empowers developers to integrate powerful funding-related capabilities into their applications. Whether you need to link bank accounts, initiate transactions, or check transaction statuses, this API provides the tools you need to build robust and secure financial services.

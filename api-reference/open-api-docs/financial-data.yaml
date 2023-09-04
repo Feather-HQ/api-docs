@@ -1,0 +1,107 @@
+openapi: 3.0.0
+info:
+  title: Financial Data API
+  version: 1.0.0
+servers:
+  - url: "https://sandbox.featherhq.com"
+paths:
+  /ira-limits/{account_type}:
+    parameters:
+      - in: path
+        name: account_type
+        required: true
+        description: The type of IRA account for which to retrieve annual contribution limits.
+        schema:
+          type: string
+          enum: ["IRA", "ROTH_IRA", "CATCHUP_IRA", "CATCHUP_ROTH_IRA"]
+      - in: query
+        name: year
+        description: Optional. The year for which to retrieve annual contribution limits. Defaults to the current financial year.
+        schema:
+          type: integer
+          format: int32
+    get:
+      summary: Get Annual IRA Contribution Limits
+      description: >
+        Retrieve the annual contribution limits for the specified IRA account type and year.
+      responses:
+        "200":
+          description: Successful response with annual contribution limits.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IRAContributionLimits"
+        "400":
+          description: Bad request. Invalid account type or year.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: Error message indicating invalid account type or year.
+  /market-data:
+    get:
+      summary: Get Live Market Data
+      description: >
+        Retrieve live market data. You can specify an optional ticker for a specific stock.
+      parameters:
+        - in: query
+          name: ticker
+          description: Optional. The ticker symbol of the stock for which to retrieve live market data.
+          schema:
+            type: string
+        - in: query
+          name: page
+          description: Optional. The page number for pagination.
+          schema:
+            type: integer
+        - in: query
+          name: per_page
+          description: Optional. The number of items per page for pagination.
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Successful response with live market data.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LiveMarketData"
+components:
+  schemas:
+    IRAContributionLimits:
+      type: object
+      properties:
+        account_type:
+          type: string
+          description: The type of IRA account.
+        year:
+          type: integer
+          format: int32
+          description: The year for which the contribution limits are provided.
+        annual_limit_individual:
+          type: number
+          description: The annual contribution limit for an individual.
+        annual_limit_catchup:
+          type: number
+          description: The annual catch-up contribution limit (if applicable).
+    LiveMarketData:
+      type: array
+      items:
+        type: object
+        properties:
+          ticker:
+            type: string
+            description: The ticker symbol of the stock.
+          price:
+            type: number
+            description: The current price of the stock.
+          volume:
+            type: integer
+            description: The trading volume for the stock.
+          timestamp:
+            type: string
+            format: date-time
+            description: The timestamp of the market data.

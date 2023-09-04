@@ -1,0 +1,36 @@
+---
+title: "Trading"
+description: "Trading API Overview"
+---
+
+The Trading API is a powerful tool for developers to interact with a trading system, enabling seamless management of trading accounts, orders, and portfolio data. Designed to facilitate trading operations, this API allows you to access critical trading functionalities programmatically.
+
+**Key Features and Capabilities**
+
+1. **Get Portfolio**: Retrieve real-time information about your trading portfolio, including account balances, positions, and market values. Use the `/portfolio/{account_id}` endpoint to access this data.
+
+2. **Get Order Details**: Query specific order details using the `/trading/place_orders/{order_id}` endpoint. Retrieve information such as order quantity, order type, status, and execution details.
+
+3. **Place Orders**: Place new trading orders programmatically by making POST requests to the `/trading/place_orders` endpoint. Specify order parameters such as order quantity, symbol, order type, and direction. The API handles order placement and provides order status updates.
+
+4. **Health Check**: Ensure the health and availability of the trading system with the `/health` endpoint. This endpoint allows you to monitor the status of the API and trading infrastructure.
+
+**Handling Responses**
+
+- **Successful Responses**: Successful API calls return HTTP status code 200, and the response body contains the requested data. For example, when querying the portfolio or order details, you will receive a JSON response with relevant information.
+
+- **Error Handling**: In case of errors, the API returns an appropriate HTTP status code (e.g., 400 for bad requests, 500 for server errors) along with a JSON response containing error details. Developers should implement error-handling logic to gracefully handle various error scenarios.
+
+**Authentication and Security**
+
+To access the Trading API, developers typically need to use API keys, tokens, or other authentication mechanisms to ensure secure and authorized access. It's crucial to follow authentication best practices to protect sensitive trading data.
+
+**Rate Limiting**
+
+Trading APIs often have rate limiting in place to prevent abuse and ensure fair usage. Developers should be aware of any rate limits imposed by the API and implement rate-limiting strategies in their applications to avoid exceeding limits.
+
+**Documentation and Support**
+
+Comprehensive API documentation is essential for developers to understand the available endpoints, request parameters, and response formats. Additionally, having access to developer support or a community forum can be valuable for resolving issues and seeking assistance with API integration.
+
+In summary, the Trading API empowers developers to automate trading operations, access real-time portfolio data, and manage orders seamlessly. By following best practices for authentication, error handling, and rate limiting, developers can create robust trading applications that leverage the full potential of the API.
