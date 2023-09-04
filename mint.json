@@ -80,6 +80,24 @@
         "funding/get-money-movement-status",
         "funding/get-withdrawable-cash-amount"
       ]
+    },
+    {
+      "group": "Account Endpoints",
+      "pages": [
+        "accounts/open-a-retirement-account",
+        "accounts/get-account-details-by-account-id",
+        "accounts/get-pending-tasks-for-an-account-by-account-id",
+        "accounts/get-account-status-by-account-id"
+      ]
+    },
+    {
+      "group": "Trading Endpoints",
+      "pages": [
+        "trading/get-portfolio",
+        "trading/get-order-details",
+        "trading/place-order",
+        "trading/health-check"
+      ]
     }
   ],
   "footerSocials": {

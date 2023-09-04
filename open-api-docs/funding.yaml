@@ -1,11 +1,17 @@
 openapi: 3.0.0
 info:
-  title: Financial API
+  title: Funding API
   version: 1.0.0
+servers:
+  - url: "https://sandbox.featherhq.com"
 paths:
   /funding/linking:
     post:
       summary: Add ACH instruction
+      description: |
+        Add an ACH instruction to an account. The ACH instruction will be
+        verified by the system and the account will be linked to the ACH
+        instruction.
       requestBody:
         required: true
         content:
@@ -22,6 +28,15 @@ paths:
   /funding/linking/{account_id}/{ach_id}:
     get:
       summary: Get ACH instruction status
+      description: |
+        Get the status of an ACH instruction. The status can be one of the
+        following:
+        - `pending`: The ACH instruction is pending verification.
+        - `verified`: The ACH instruction has been verified and the account has
+          been linked to the ACH instruction.
+        - `failed`: The ACH instruction has failed verification.
+        - `manual_verification_required`: The ACH instruction requires manual
+          verification.
       parameters:
         - name: account_id
           in: path
@@ -42,6 +57,9 @@ paths:
                 $ref: "#/components/schemas/AchInstructionStatus"
     delete:
       summary: Delete ACH instruction
+      description: |
+        Delete an ACH instruction. The ACH instruction will be deleted and the
+        account will be unlinked from the ACH instruction.
       parameters:
         - name: account_id
           in: path
@@ -63,6 +81,10 @@ paths:
   /funding/money_movement:
     post:
       summary: Create money movement
+      description: |
+        Create a money movement. The money movement will be processed by the
+        system and the status of the money movement can be checked using the
+        `/funding/money_movement/{account_id}/{mm_id}` endpoint.
       requestBody:
         required: true
         content:
@@ -79,6 +101,12 @@ paths:
   /funding/money_movement/{account_id}/{mm_id}:
     get:
       summary: Get money movement status
+      description: |
+        Get the status of a money movement. The status can be one of the
+        following:
+        - `pending`: The money movement is pending.
+        - `completed`: The money movement has been completed.
+        - `failed`: The money movement has failed.
       parameters:
         - name: account_id
           in: path
@@ -100,6 +128,10 @@ paths:
   /funding/withdrawable_cash/{account_id}:
     get:
       summary: Get withdrawable cash amount
+      description: |
+        Get the amount of withdrawable cash for an account. The amount of
+        withdrawable cash is the amount of cash that can be withdrawn from the
+        account.
       parameters:
         - name: account_id
           in: path
