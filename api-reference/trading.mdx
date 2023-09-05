@@ -7,13 +7,9 @@ The Trading API is a powerful tool for developers to interact with a trading sys
 
 **Key Features and Capabilities**
 
-1. **Get Portfolio**: Retrieve real-time information about your trading portfolio, including account balances, positions, and market values. Use the `/portfolio/{account_id}` endpoint to access this data.
+1. **Get Order Details**: Query specific order details using the `/trading/place_orders/{order_id}` endpoint. Retrieve information such as order quantity, order type, status, and execution details.
 
-2. **Get Order Details**: Query specific order details using the `/trading/place_orders/{order_id}` endpoint. Retrieve information such as order quantity, order type, status, and execution details.
-
-3. **Place Orders**: Place new trading orders programmatically by making POST requests to the `/trading/place_orders` endpoint. Specify order parameters such as order quantity, symbol, order type, and direction. The API handles order placement and provides order status updates.
-
-4. **Health Check**: Ensure the health and availability of the trading system with the `/health` endpoint. This endpoint allows you to monitor the status of the API and trading infrastructure.
+2. **Place Orders**: Place new trading orders programmatically by making POST requests to the `/trading/place_orders` endpoint. Specify order parameters such as order quantity, symbol, order type, and direction. The API handles order placement and provides order status updates.
 
 **Handling Responses**
 
