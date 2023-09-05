@@ -3,40 +3,89 @@ title: "Authentication"
 description: "Authentication Overview"
 ---
 
-**Authentication for API Access**
+## Introduction
 
-Authentication is a crucial aspect of using the Accounts API to ensure secure and authorized access to financial data and account management operations. This description provides insights into how authentication is performed and how developers can use it effectively to call these APIs.
+This technical document outlines the authentication process using API keys for accessing our services. API keys serve as a secure and straightforward means of authentication for developers working with our APIs. This guide covers essential concepts, practical usage, and security considerations for API keys in both sandbox and production environments.
 
-**Authentication Mechanism:**
+## Table of Contents
 
-The Accounts API employs OAuth 2.0 as its authentication mechanism. OAuth 2.0 is a widely adopted protocol that allows applications to securely access resources on behalf of a user. It is essential for safeguarding sensitive financial information and maintaining the privacy and security of user accounts.
+1. [API Key Fundamentals](#api-key-fundamentals)
 
-**Authentication Flow:**
+   - 1.1 [Understanding API Keys](#understanding-api-keys)
+   - 1.2 [Types of API Keys](#types-of-api-keys)
 
-1. **Client Registration:** Before you can use the Accounts API, you need to register your application as a client with the API provider. This registration process typically involves creating an application profile, obtaining a client ID and secret, and specifying redirect URIs.
+2. [Obtaining API Keys](#obtaining-api-keys)
 
-2. **User Consent:** When an end-user initiates an action that requires API access, your application will request authorization. The user will be prompted to grant consent for your application to access their financial data.
+   - 2.1 [Sandbox API Keys](#sandbox-api-keys)
+   - 2.2 [Production API Keys](#production-api-keys)
 
-3. **Token Retrieval:** Upon user consent, your application exchanges the authorization code for an access token. This access token serves as a credential that allows your application to make authorized requests to the API.
+3. [Using API Keys](#using-api-keys)
 
-4. **API Access:** With the access token in hand, your application can include it in API requests using the 'Authorization' header. The API provider validates the token to ensure that the request is legitimate and authorized.
+   - 3.1 [Inclusion in Headers](#inclusion-in-headers)
+   - 3.2 [Rate Limiting](#rate-limiting)
 
-**Developer Guidance:**
+4. [Security Considerations](#security-considerations)
+   - 4.1 [API Key Security](#api-key-security)
+   - 4.2 [Monitoring and Logging](#monitoring-and-logging)
 
-Here are some essential guidelines for developers on using authentication effectively with the Accounts API:
+## 1. API Key Fundamentals
 
-- **Secure Storage:** Safeguard client credentials, access tokens, and refresh tokens. Store them securely and avoid exposing them in client-side code or public repositories.
+### 1.1 Understanding API Keys
 
-- **Token Expiry:** Access tokens typically have a limited lifespan. Ensure your application can handle token expiration gracefully by implementing token refresh logic.
+An API key is a unique identifier that serves as an authentication token. It allows applications and developers to verify their identity when making requests to our APIs. This simple yet effective mechanism controls access to our resources and tracks usage.
 
-- **Scopes:** Pay attention to OAuth scopes when requesting authorization. Scopes define the level of access your application requires. Only request access to the resources you genuinely need.
+### 1.2 Types of API Keys
 
-- **Error Handling:** Implement robust error handling for authentication-related issues. Handle cases where tokens are expired, revoked, or denied.
+We offer two distinct types of API keys for different environments:
 
-- **Refresh Tokens:** When access tokens expire, use refresh tokens to obtain new access tokens without requiring user reauthorization.
+- **Sandbox API Keys:** Designed for testing and development purposes in a controlled environment. These keys have restricted access and usage limits.
 
-**API Documentation:**
+- **Production API Keys:** Reserved for accessing our production services, where live data and operations occur. These keys provide full access to our services and demand the highest level of security.
 
-Refer to the API documentation for specific details on the authentication process, including endpoint URLs, required parameters, and error codes. The documentation provides step-by-step guidance on implementing OAuth 2.0 authentication with the Accounts API.
+## 2. Obtaining API Keys
 
-In summary, robust authentication is fundamental to secure and authorized access to the Accounts API. Developers should follow best practices, adhere to OAuth 2.0 standards, and prioritize the privacy and security of user financial data when building applications that leverage these APIs.
+### 2.1 Sandbox API Keys
+
+To acquire sandbox API keys, refer to our developer documentation for sandbox environments. Typically, obtaining these keys is straightforward, and they are intended for testing and development. Your company will be given access to these keys early on in the implementation phase
+
+### 2.2 Production API Keys
+
+Production API keys require a formal request and approval process. To obtain production API keys, reach out to our API support team. These keys grant access to live data and operations and must be treated with utmost care. Your company will be granted a set of these keys once approved for production
+
+## 3. Using API Keys
+
+### 3.1 Inclusion in Headers
+
+When making API requests, include your API key in the request header as 'x-api-key'. Consult the specific API documentation for precise instructions on including your API key in requests.
+
+Example Header:
+
+```http
+GET /api/resource
+Host: api.example.com
+x-api-key: YOUR_API_KEY
+```
+
+### 3.2 Rate Limiting
+
+To ensure fair usage and prevent misuse, our APIs may impose rate limits. Review the API documentation for details regarding rate limits for each endpoint. Exceeding these limits may lead to temporary access suspension.
+
+## 4. Security Considerations
+
+### 4.1 API Key Security
+
+- **Securing Your Keys:** Treat API keys as sensitive credentials. Never expose them in public code repositories, client-side applications, or insecure locations.
+
+- **Environment Variables:** Store API keys as environment variables or within a secure configuration file, keeping them separate from your codebase.
+
+- **Access Control:** Limit access to API keys to authorized personnel only. Avoid indiscriminate sharing.
+
+### 4.2 Monitoring and Logging
+
+Implement robust monitoring and logging for API key usage. Monitor for unusual activity and set up alerts for suspicious behavior. Maintain logs of API key usage to track access, including who accessed resources and when.
+
+## Conclusion
+
+API keys offer a fundamental authentication method for accessing our services. By adhering to the best practices outlined in this document, you can ensure the security and reliability of your API integrations. Remember that sandbox and production API keys serve distinct purposes, aligning with your development and production requirements.
+
+For technical inquiries or assistance related to API keys or authentication, please reach out to our API support team.
