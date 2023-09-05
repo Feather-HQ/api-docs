@@ -6,25 +6,7 @@ info:
 servers:
   - url: "https://sandbox.featherhq.com"
 paths:
-  /portfolio/{account_id}:
-    get:
-      summary: Get Portfolio
-      description: Get current portfolio of the account.
-      parameters:
-        - $ref: "#/components/parameters/apiKeyHeader"
-        - name: account_id
-          in: path
-          required: true
-          description: The account ID
-          schema:
-            type: string
-      responses:
-        200:
-          description: Successful response
-        400:
-          description: Bad request
-
-  /trading/place_orders/{order_id}:
+  /trading/order/{order_id}:
     get:
       summary: Get Order Details
       description: Get details of a specific order by its order ID.
@@ -39,12 +21,16 @@ paths:
       responses:
         200:
           description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OrderObject"
         400:
           description: Bad request
 
-  /trading/place_orders:
+  /trading/order:
     post:
-      summary: Place Order
+      summary: Post Order
       description: Place a new trading order.
       parameters:
         - $ref: "#/components/parameters/apiKeyHeader"
@@ -53,34 +39,12 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                order_qty:
-                  type: integer
-                  description: The quantity of the order
-                order_symbol:
-                  type: string
-                  description: The symbol of the security for the order
-                order_direction:
-                  type: string
-                  enum: [BUY, SELL]
-                  description: The direction of the order (BUY or SELL)
-                account_id:
-                  type: string
-                  description: The account ID for which the order is placed
+              $ref: "#/components/schemas/OrderObject"
       responses:
         200:
           description: Successful response
         400:
           description: Bad request
-
-  /health:
-    get:
-      summary: Health Check
-      description: Check the health of the application.
-      responses:
-        200:
-          description: Ok
 
 components:
   parameters:
@@ -91,3 +55,47 @@ components:
       schema:
         type: string
       description: API Key for authentication
+  schemas:
+    OrderObject:
+      type: object
+      properties:
+        order_uuid:
+          type: string
+          description: Unique identifier for the order.
+          example: abcd-1234-efgh-5678
+        order_qty:
+          type: integer
+          description: Quantity of the order.
+          example: 100
+        order_symbol:
+          type: string
+          description: Symbol of the order.
+          example: MSFT
+        order_type:
+          type: string
+          enum: [MKT, LMT]
+          description: Type of the order.
+          example: MKT
+        order_currency:
+          type: string
+          description: Currency of the order.
+          example: USD
+        order_direction:
+          type: string
+          enum: [BUY, SELL]
+          description: Direction of the order (BUY/SELL).
+          example: BUY
+        order_status:
+          type: string
+          enum: ["Received", "Pending", "Filled", "Rejected", "Error"]
+          description: Status of the order (Received).
+          example: Received
+        account_id:
+          type: string
+          description: Unique identifier for the account.
+          example: AB1234
+        order_sec_type:
+          type: string
+          enum: [STK]
+          description: Security type of the order (STK).
+          example: STK

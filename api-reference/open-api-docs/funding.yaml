@@ -26,19 +26,19 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ApiResponse"
+                $ref: "#/components/schemas/AchInstructionStatus"
   /funding/linking/{account_id}/{ach_id}:
     get:
       summary: Get ACH instruction status
       description: |
         Get the status of an ACH instruction. The status can be one of the
         following:
-        - `pending`: The ACH instruction is pending verification.
-        - `verified`: The ACH instruction has been verified and the account has
-          been linked to the ACH instruction.
-        - `failed`: The ACH instruction has failed verification.
-        - `manual_verification_required`: The ACH instruction requires manual
-          verification.
+        - `PROCESSED`
+        - `REJECTED`
+        - `DELETED`
+        - `PENDING`
+        - `PENDING_VERIFICATION`
+
       parameters:
         - $ref: "#/components/parameters/apiKeyHeader"
         - name: account_id
@@ -97,8 +97,11 @@ paths:
           required: true
           schema:
             type: string
+            enum:
+              - C
+              - S
             example: C
-          description: The type of bank account (e.g., Checking)
+          description: The type of bank account (e.g., C)
       responses:
         "200":
           description: Success response
@@ -134,9 +137,11 @@ paths:
       description: |
         Get the status of a money movement. The status can be one of the
         following:
-        - `pending`: The money movement is pending.
-        - `completed`: The money movement has been completed.
-        - `failed`: The money movement has failed.
+        - `PROCESSED`
+        - `REJECTED`
+        - `DELETED`
+        - `PENDING`
+        - `PENDING_VERIFICATION`
       parameters:
         - $ref: "#/components/parameters/apiKeyHeader"
         - name: account_id
@@ -188,6 +193,14 @@ components:
       description: API Key for authentication
 
   schemas:
+    ACHStatus:
+      type: string
+      enum:
+        - "PROCESSED"
+        - "REJECTED"
+        - "DELETED"
+        - "PENDING"
+        - "PENDING_VERIFICATION"
     AchInstruction:
       type: object
       properties:

@@ -69,7 +69,9 @@
         "api-reference/endpoint/accounts/get-account-details",
         "api-reference/endpoint/accounts/get-pending-tasks-for-an-account",
         "api-reference/endpoint/accounts/get-account-status",
-        "api-reference/endpoint/accounts/get-documents"
+        "api-reference/endpoint/accounts/get-documents",
+        "api-reference/endpoint/accounts/get-portfolio",
+        "api-reference/endpoint/accounts/get-annual-ira-contribution-limits"
       ]
     },
     {
@@ -86,10 +88,8 @@
     {
       "group": "Trading Endpoints",
       "pages": [
-        "api-reference/endpoint/trading/get-portfolio",
         "api-reference/endpoint/trading/get-order-details",
-        "api-reference/endpoint/trading/place-order",
-        "api-reference/endpoint/trading/health-check"
+        "api-reference/endpoint/trading/post-order"
       ]
     },
     {
