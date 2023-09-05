@@ -131,9 +131,12 @@ paths:
       description: |
         Get the status of a retirement account by account ID. The account status
         can be one of the following:
-        - `active`: The account is active.
-        - `inactive`: The account is inactive.
-        - `pending`: The account is pending.
+        - `A`: Abandoned - The account has been abandoned.
+        - `N`: New - The account is not yet open.
+        - `O`: Open - The account is currently open.
+        - `C`: Closed - The account has been closed.
+        - `P`: Pending - The account is not yet open and is pending approval.
+        - `R`: Rejected - The account has been rejected and is not open.
       parameters:
         - $ref: "#/components/parameters/apiKeyHeader"
         - in: path
@@ -167,7 +170,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
-  "/accounts/{account_id}/documents":
+  "/accounts//documents/{account_id}":
     get:
       summary: Get documents
       description: "Retrieve a list of documents available for a specific account.\n\n
@@ -192,6 +195,82 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Document"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  "/accounts/{account_id}/ira-limits/{account_type}":
+    parameters:
+      - $ref: "#/components/parameters/apiKeyHeader"
+      - in: path
+        name: account_id
+        required: true
+        description: The ID of the account for which annual limits are to be retrieved.
+        schema:
+          type: string
+      - in: path
+        name: account_type
+        required: true
+        description: The type of IRA account for which to retrieve annual contribution limits.
+        schema:
+          type: string
+          enum: ["IRA", "ROTH_IRA", "CATCHUP_IRA", "CATCHUP_ROTH_IRA"]
+      - in: query
+        name: year
+        description: Optional. The year for which to retrieve annual contribution limits. Defaults to the current financial year.
+        schema:
+          type: integer
+          format: int32
+    get:
+      summary: Get Annual IRA Contribution Limits
+      description: >
+        Retrieve the annual contribution limits for the specified IRA account, type and year.
+      responses:
+        "200":
+          description: Successful response with annual contribution limits.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IRAContributionLimits"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  "/accounts/portfolio/{account_id}":
+    get:
+      summary: Get Portfolio
+      description: Get current portfolio of the account.
+      parameters:
+        - $ref: "#/components/parameters/apiKeyHeader"
+        - name: account_id
+          in: path
+          required: true
+          description: The account ID
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Account opening successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PositionsResponseObject"
         "400":
           description: Bad request
           content:
@@ -237,6 +316,12 @@ components:
       properties:
         phone_type:
           type: string
+          enum:
+            - Mobile
+            - Home
+            - Work
+            - Fax
+            - Business
           description: Type of phone number (e.g., Mobile, Home, Work)
         number:
           type: string
@@ -262,7 +347,7 @@ components:
           description: City or locality
         state:
           type: string
-          description: State or province
+          description: "State or province. Ex: US-WA "
         postal_code:
           type: string
           description: Postal code or ZIP code
@@ -303,7 +388,6 @@ components:
         - description
         - amount
         - currency
-    
     PendingTasks:
       type: object
       properties:
@@ -329,10 +413,22 @@ components:
           description: Unique identifier for the account
         account_status:
           type: string
-          description: Current account status (e.g., Active, Inactive, Pending)
+          enum:
+            - A
+            - N
+            - O
+            - C
+            - P
+            - R
+          description: Enum representing the status of retirement accounts (e.g., IRA).
         account_state:
           type: string
-          description: Additional account state information (e.g., Locked, Restricted)
+          enum:
+            - IncompleteApplication
+            - DocumentsRequired
+            - UnderReview
+            - PendingApproval
+          description: Additional account state information (e.g., Incomplete Application, Under Review)
       required:
         - account_id
         - account_status
@@ -348,6 +444,9 @@ components:
         is_online_task:
           type: boolean
           description: Indicates whether the task is an online task
+        requires_manual_verification:
+          type: boolean
+          description: Indicates if manual verification is required
         form_name:
           type: string
           description: Name or description of the form
@@ -364,10 +463,7 @@ components:
         - is_online_task
         - form_name
         - identification_url
-        - identification_url_expiry
-    
-   
-   
+        - identification_url_expiry 
     AccountOpeningResponse:
       type: object
       properties:
@@ -480,7 +576,7 @@ components:
             date_of_birth:
               type: string
               format: date
-              description: Date of birth
+              description: Date of birth (YYYY-MM-DD)
             citizenship:
               type: string
               description: Citizenship
@@ -636,7 +732,6 @@ components:
           items:
             $ref: '#/components/schemas/PendingTask'
           description: List of pending tasks
-
     AccountOpeningRequest:
       type: object
       properties:
@@ -645,7 +740,7 @@ components:
           description: External ID of the customer
         prefix:
           type: string
-          description: Prefix for the customer
+          description: Prefix for the customer. Feather will provide one for your application.
         customer:
           type: object
           properties:
@@ -674,7 +769,7 @@ components:
                     date_of_birth:
                       type: string
                       format: date
-                      description: Date of birth of the account holder
+                      description: Date of birth of the account holder (YYYY-MM-DD)
                     email:
                       type: string
                       format: email
@@ -687,13 +782,16 @@ components:
                       properties:
                         street_1:
                           type: string
-                          description: Street address of the account holder
+                          description: First line of the street address
+                        street_2:
+                          type: string
+                          description: Second line of the street address
                         city:
                           type: string
-                          description: City of the account holder
+                          description: City or locality
                         state:
                           type: string
-                          description: State of the account holder
+                          description: "State or province. Ex: US-WA "
                         postal_code:
                           type: string
                           description: Postal code of the account holder
@@ -703,15 +801,57 @@ components:
                       description: Address details of the account holder
                     same_mail_address:
                       type: boolean
-                      description: Indicates if the mailing address is the same
+                      description: Indicates if the mailing address is the same. If false, please provide the mailing address.
+                    mailing_address:
+                      type: object
+                      properties:
+                        street_1:
+                          type: string
+                          description: First line of the mailing street address
+                        street_2:
+                          type: string
+                          description: Second line of the mailing street address
+                        city:
+                          type: string
+                          description: City or locality
+                        state:
+                          type: string
+                          description: "State or province. Ex: US-WA "
+                        postal_code:
+                          type: string
+                          description: Postal code of the account holder
+                        country:
+                          type: string
+                          description: Country of the account holder
+                      description: Mailing Address details of the account holder
+                    
                     marital_status:
                       type: string
-                      description: Marital status of the account holder
+                      enum:
+                        - S
+                        - M
+                        - D
+                        - W
+                        - C
+                      description: |
+                        Marital status of the account holder. The marital account status
+                        can be one of the following:
+                        - `S`: Single
+                        - `M`: Married
+                        - `D`: Divorced
+                        - `W`: Widowed
+                        - `C`: Common Law Partner
                     phone:
                       type: object
                       properties:
                         phone_type:
                           type: string
+                          enum:
+                            - Mobile
+                            - Home
+                            - Work
+                            - Fax
+                            - Business
                           description: Type of phone
                         number:
                           type: string
@@ -731,7 +871,7 @@ components:
                           description: Issuing country for identification
                         identification_type:
                           type: string
-                          description: Type of identification
+                          description: Type of identification. It's always SSN
                         identification_num:
                           type: string
                           description: Identification number
@@ -748,6 +888,10 @@ components:
                       description: Tax residency details
                     employment_type:
                       type: string
+                      enum:
+                        - EMPLOYED
+                        - SELFEMPLOYED
+                        - ATHOMETRADER
                       description: Type of employment
                     employment_details:
                       type: object
@@ -800,9 +944,16 @@ components:
                         properties:
                           asset_class:
                             type: string
+                            enum:
+                              - STK
                             description: Asset class
                           knowledge_level:
                             type: string
+                            enum:
+                              - None
+                              - Limited
+                              - Good
+                              - Extensive
                             description: Knowledge level
                           trades_per_year:
                             type: integer
@@ -818,6 +969,15 @@ components:
                         properties:
                           source_type:
                             type: string
+                            enum:
+                              - SOW-IND-Allowance
+                              - SOW-IND-Disability
+                              - SOW-IND-Income
+                              - SOW-IND-Inheritance
+                              - SOW-IND-Interest
+                              - SOW-IND-MarketProfit
+                              - SOW-IND-Pension
+                              - SOW-IND-PropertySale
                             description: Source type
                           is_used_for_funds:
                             type: boolean
@@ -836,16 +996,13 @@ components:
                       type: integer
                       description: Net worth
                   description: Financial information
-                regulatory_information:
-                  type: object
-                  description: Regulatory information (you can add specific properties)
           description: Account holder information
         accounts:
           type: object
           properties:
             external_id:
               type: string
-              description: External ID of the account
+              description: Unique ID of the account holder
             account_type:
               type: string
               description: Type of the account
@@ -874,7 +1031,7 @@ components:
                   date_of_birth:
                     type: string
                     format: date
-                    description: Date of birth of the beneficiary
+                    description: Date of birth of the beneficiary (YYYY-MM-DD)
                   address:
                     type: object
                     properties:
@@ -925,7 +1082,7 @@ components:
                         description: Issuing country for identification
                       identification_type:
                         type: string
-                        description: Type of identification
+                        description: Type of identification. It's always SSN
                       identification_num:
                         type: string
                         description: Identification number
@@ -939,19 +1096,60 @@ components:
           description: Account details
         documents:
           type: object
-          additionalProperties:
-            type: object
-            properties:
-              exec_ts:
-                type: string
-                description: Execution timestamp
-              exec_login_ts:
-                type: string
-                description: Execution login timestamp
-              signed_by:
-                type: string
-                description: Signed by
-          description: Document details
+          properties:
+            document_id:
+              type: object
+              properties:
+                exec_ts:
+                  type: string
+                  description: Execution timestamp
+                exec_login_ts:
+                  type: string
+                  description: Execution login timestamp
+                signed_by:
+                  type: string
+                  description: Signed by
+    IRAContributionLimits:
+      type: object
+      properties:
+        account_type:
+          type: string
+          description: The type of IRA account.
+        year:
+          type: integer
+          format: int32
+          description: The year for which the contribution limits are provided.
+        annual_limit_individual:
+          type: number
+          description: The annual contribution limit for an individual.
+        annual_limit_catchup:
+          type: number
+          description: The annual catch-up contribution limit (if applicable).
+    PositionsResponseObject:
+      type: object
+      properties:
+        cash_value:
+          type: number
+          description: Cash value
+        positions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Position'
+          description: List of positions
+    Position:
+      type: object
+      properties:
+        quantity:
+          type: number
+          description: Quantity of the position
+        avg_fill_price:
+          type: number
+          description: Average fill price of the position
+        symbol:
+          type: string
+          description: Symbol of the position
+
+
 
 
 
