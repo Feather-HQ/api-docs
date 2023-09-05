@@ -11,6 +11,7 @@ paths:
       summary: Get Portfolio
       description: Get current portfolio of the account.
       parameters:
+        - $ref: "#/components/parameters/apiKeyHeader"
         - name: account_id
           in: path
           required: true
@@ -28,6 +29,7 @@ paths:
       summary: Get Order Details
       description: Get details of a specific order by its order ID.
       parameters:
+        - $ref: "#/components/parameters/apiKeyHeader"
         - name: order_id
           in: path
           required: true
@@ -44,6 +46,8 @@ paths:
     post:
       summary: Place Order
       description: Place a new trading order.
+      parameters:
+        - $ref: "#/components/parameters/apiKeyHeader"
       requestBody:
         required: true
         content:
@@ -77,3 +81,13 @@ paths:
       responses:
         200:
           description: Ok
+
+components:
+  parameters:
+    apiKeyHeader:
+      name: x-api-key
+      in: header
+      required: true
+      schema:
+        type: string
+      description: API Key for authentication

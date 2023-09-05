@@ -12,6 +12,8 @@ paths:
         Add an ACH instruction to an account. The ACH instruction will be
         verified by the system and the account will be linked to the ACH
         instruction.
+      parameters:
+        - $ref: "#/components/parameters/apiKeyHeader"
       requestBody:
         required: true
         content:
@@ -38,6 +40,7 @@ paths:
         - `manual_verification_required`: The ACH instruction requires manual
           verification.
       parameters:
+        - $ref: "#/components/parameters/apiKeyHeader"
         - name: account_id
           in: path
           required: true
@@ -62,15 +65,40 @@ paths:
         account will be unlinked from the ACH instruction.
       parameters:
         - name: account_id
-          in: path
+          in: query
           required: true
           schema:
             type: string
-        - name: ach_id
-          in: path
+            example: U91146864
+          description: The account ID to identify the bank account to delete
+        - name: bank_name
+          in: query
           required: true
           schema:
             type: string
+            example: Wells Fargo
+          description: The name of the bank associated with the account
+        - name: routing_number
+          in: query
+          required: true
+          schema:
+            type: string
+            example: 121042882
+          description: The routing number of the bank account
+        - name: account_number
+          in: query
+          required: true
+          schema:
+            type: string
+            example: 0000001122
+          description: The account number to identify the bank account
+        - name: bank_account_type
+          in: query
+          required: true
+          schema:
+            type: string
+            example: C
+          description: The type of bank account (e.g., Checking)
       responses:
         "200":
           description: Success response
@@ -85,6 +113,8 @@ paths:
         Create a money movement. The money movement will be processed by the
         system and the status of the money movement can be checked using the
         `/funding/money_movement/{account_id}/{mm_id}` endpoint.
+      parameters:
+        - $ref: "#/components/parameters/apiKeyHeader"
       requestBody:
         required: true
         content:
@@ -108,6 +138,7 @@ paths:
         - `completed`: The money movement has been completed.
         - `failed`: The money movement has failed.
       parameters:
+        - $ref: "#/components/parameters/apiKeyHeader"
         - name: account_id
           in: path
           required: true
@@ -133,6 +164,7 @@ paths:
         withdrawable cash is the amount of cash that can be withdrawn from the
         account.
       parameters:
+        - $ref: "#/components/parameters/apiKeyHeader"
         - name: account_id
           in: path
           required: true
@@ -146,6 +178,15 @@ paths:
               schema:
                 $ref: "#/components/schemas/WithdrawableCashAmount"
 components:
+  parameters:
+    apiKeyHeader:
+      name: x-api-key
+      in: header
+      required: true
+      schema:
+        type: string
+      description: API Key for authentication
+
   schemas:
     AchInstruction:
       type: object
