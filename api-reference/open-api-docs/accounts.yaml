@@ -17,6 +17,8 @@ paths:
         Open a retirement account for a client. The account will be opened with
         the specified account type and the account holder will be the client
         associated with the specified external ID.
+      parameters:
+        - $ref: "#/components/parameters/apiKeyHeader"
       requestBody:
         description: JSON request body for account opening
         required: true
@@ -51,6 +53,7 @@ paths:
         include the account holder information, account balance, recent
         transactions, and beneficiary information.
       parameters:
+        - $ref: "#/components/parameters/apiKeyHeader"
         - in: path
           name: account_id
           required: true
@@ -63,7 +66,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AccountDetails"
+                $ref: "#/components/schemas/AccountInfo"
         "400":
           description: Bad request
           content:
@@ -90,6 +93,7 @@ paths:
         tasks include any tasks that need to be completed before the account can
         be opened.
       parameters:
+        - $ref: "#/components/parameters/apiKeyHeader"
         - in: path
           name: account_id
           required: true
@@ -102,7 +106,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PendingTasks"
+                $ref: "#/components/schemas/PendingTasksResponse"
         "400":
           description: Bad request
           content:
@@ -131,6 +135,7 @@ paths:
         - `inactive`: The account is inactive.
         - `pending`: The account is pending.
       parameters:
+        - $ref: "#/components/parameters/apiKeyHeader"
         - in: path
           name: account_id
           required: true
@@ -168,6 +173,7 @@ paths:
       description: "Retrieve a list of documents available for a specific account.\n\n
       **Please note**: This endpoint is currently under migration and will be available soon."
       parameters:
+        - $ref: "#/components/parameters/apiKeyHeader"
         - in: path
           name: account_id
           required: true
@@ -199,6 +205,14 @@ paths:
               schema:
                 $ref: "#/components/schemas/Error"
 components:
+  parameters:
+    apiKeyHeader:
+      name: x-api-key
+      in: header
+      required: true
+      schema:
+        type: string
+      description: API Key for authentication
   schemas:
     Name:
       type: object
@@ -289,90 +303,7 @@ components:
         - description
         - amount
         - currency
-    AccountOpeningRequest:
-      type: object
-      properties:
-        external_id:
-          type: string
-          description: The unique external ID for the user
-        prefix:
-          type: string
-          description: The account prefix (e.g., "XYZ")
-        customer:
-          $ref: "#/components/schemas/CustomerDetails"
-        accounts:
-          $ref: "#/components/schemas/AccountOpeningDetails"
-        documents:
-          $ref: "#/components/schemas/DocumentDetails"
-    AccountDetails:
-      type: object
-      properties:
-        account_id:
-          type: string
-          description: Unique identifier for the account
-        account_type:
-          type: string
-          description: Type of the account (e.g., Checking, Savings, Investment, etc.)
-        account_balance:
-          type: number
-          description: Current account balance
-        currency:
-          type: string
-          description: Currency in which the account balance is denominated
-        account_holder:
-          type: object
-          properties:
-            name:
-              $ref: "#/components/schemas/Name"
-            date_of_birth:
-              type: string
-              format: date
-              description: Date of birth of the account holder
-            contact_information:
-              type: object
-              properties:
-                email:
-                  type: string
-                  format: email
-                  description: Email address of the account holder
-                phone:
-                  $ref: "#/components/schemas/PhoneNumber"
-            address:
-              $ref: "#/components/schemas/Address"
-        transactions:
-          type: array
-          description: List of recent account transactions
-          items:
-            $ref: "#/components/schemas/Transaction"
-        beneficiary:
-          type: object
-          properties:
-            name:
-              $ref: "#/components/schemas/Name"
-            date_of_birth:
-              type: string
-              format: date
-              description: Date of birth of the beneficiary
-            relationship:
-              type: string
-              description: Relationship of the beneficiary to the account holder
-            contact_information:
-              type: object
-              properties:
-                email:
-                  type: string
-                  format: email
-                  description: Email address of the beneficiary
-                phone:
-                  $ref: "#/components/schemas/PhoneNumber"
-            address:
-              $ref: "#/components/schemas/Address"
-      required:
-        - account_id
-        - account_type
-        - account_balance
-        - currency
-        - account_holder
+    
     PendingTasks:
       type: object
       properties:
@@ -434,44 +365,9 @@ components:
         - form_name
         - identification_url
         - identification_url_expiry
-    CustomerDetails:
-      type: object
-      properties:
-        account_holder:
-          $ref: "#/components/schemas/AccountHolderDetails"
-    AccountOpeningDetails:
-      type: object
-      properties:
-        account_type:
-          type: string
-          description: The type of account (e.g., "TRAD_IRA", "ROTH_IRA")
-        other_properties:
-          type: string
-          description: Other account properties
-    DocumentDetails:
-      type: object
-      properties:
-        document_type:
-          type: string
-          description: The type of document
-        other_properties:
-          type: string
-          description: Other document properties
-    AccountHolderDetails:
-      type: object
-      properties:
-        first_name:
-          type: string
-          description: The first name of the account holder
-        middle_name:
-          type: string
-          description: The middle name of the account holder
-        last_name:
-          type: string
-          description: The last name of the account holder
-        salutation:
-          type: string
-          description: The salutation of the account holder
+    
+   
+   
     AccountOpeningResponse:
       type: object
       properties:
@@ -500,3 +396,565 @@ components:
           type: string
           format: date-time
           description: The date and time when the document was uploaded.
+    AccountInfo:
+      type: object
+      properties:
+        accountAlias:
+          type: string
+          description: The account alias
+        capabilities:
+          type: object
+          properties:
+            requested:
+              type: array
+              items:
+                type: string
+          description: Requested capabilities
+        investmentExperience:
+          type: object
+          properties:
+            STOCKS:
+              type: object
+              properties:
+                knowledgeLevel:
+                  type: string
+                  description: Knowledge level for stocks
+                yearsTrading:
+                  type: string
+                  description: Years of trading stocks
+                tradesPerYear:
+                  type: string
+                  description: Number of trades per year
+          description: Investment experience details for stocks
+        description:
+          type: string
+          description: Account description
+        acctId:
+          type: string
+          description: Account ID
+        type:
+          type: string
+          description: Account type
+        title:
+          type: string
+          description: Account title
+        users:
+          type: array
+          items:
+            type: string
+          description: List of users associated with the account
+        signatures:
+          type: array
+          items:
+            type: string
+          description: List of signatures
+        taxResidency:
+          type: array
+          items:
+            type: object
+            properties:
+              taxId:
+                type: string
+                description: Tax ID
+              taxCountry:
+                type: string
+                description: Tax country
+              taxIdType:
+                type: string
+                description: Tax ID type
+          description: Tax residency information
+        derivatives:
+          type: object
+          properties:
+            requested:
+              type: array
+              items:
+                type: string
+          description: Requested derivatives
+        custInfo:
+          type: object
+          properties:
+            state_of_legal_res:
+              type: string
+              description: State of legal residence
+            date_of_birth:
+              type: string
+              format: date
+              description: Date of birth
+            citizenship:
+              type: string
+              description: Citizenship
+            country_of_birth:
+              type: string
+              description: Country of birth
+            country_of_legal_res:
+              type: string
+              description: Country of legal residence
+          description: Customer information
+        emailAddress:
+          type: string
+          format: email
+          description: Email address
+        identificationDetails:
+          type: object
+          properties:
+            id_number:
+              type: string
+              description: Identification number
+            id_issuing_country:
+              type: string
+              description: Issuing country
+            id:
+              type: string
+              description: Identification type
+          description: Identification details
+        isError:
+          type: boolean
+          description: Indicates whether there is an error
+        regulatoryDetails:
+          type: object
+          properties:
+            regulatory_regulatory_control:
+              type: string
+              description: Regulatory control
+            reg_affiliation:
+              type: string
+              description: Regulatory affiliation
+          description: Regulatory details
+        applicantType:
+          type: string
+          description: Applicant type
+        entities:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: object
+                properties:
+                  last:
+                    type: string
+                    description: Last name
+                  salutation:
+                    type: string
+                    description: Salutation
+                  first:
+                    type: string
+                    description: First name
+                description: Name details
+              association:
+                type: array
+                items:
+                  type: string
+                description: Association details
+              phones:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    number:
+                      type: string
+                      description: Phone number
+                    country:
+                      type: string
+                      description: Phone country
+                    type:
+                      type: string
+                      description: Phone type
+                description: Phone details
+              external_id:
+                type: string
+                description: External ID
+              type:
+                type: string
+                description: Entity type
+              residence:
+                type: object
+                properties:
+                  country:
+                    type: string
+                    description: Residence country
+                  city:
+                    type: string
+                    description: Residence city
+                  postalCode:
+                    type: string
+                    description: Residence postal code
+                  street1:
+                    type: string
+                    description: Residence street address
+                  state:
+                    type: string
+                    description: Residence state
+                description: Residence details
+              users:
+                type: array
+                items:
+                  type: string
+                description: List of users associated with the entity
+          description: List of entities
+        investmentObjectives:
+          type: array
+          items:
+            type: string
+          description: List of investment objectives
+        mifidCategory:
+          type: string
+          description: MiFID category
+        sowList:
+          type: array
+          items:
+            type: string
+          description: List of SOWs
+        financialData:
+          type: object
+          properties:
+            annualNetIncome:
+              type: string
+              description: Annual net income
+            netWorth:
+              type: string
+              description: Net worth
+            liquidNetWorth:
+              type: string
+              description: Liquid net worth
+          description: Financial data
+        status:
+          type: string
+          description: Account status
+    PendingTasksResponse:
+      type: object
+      properties:
+        count:
+          type: integer
+          description: The number of pending tasks
+        account_id:
+          type: string
+          description: The account ID
+        pending_tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/PendingTask'
+          description: List of pending tasks
+
+    AccountOpeningRequest:
+      type: object
+      properties:
+        external_id:
+          type: string
+          description: External ID of the customer
+        prefix:
+          type: string
+          description: Prefix for the customer
+        customer:
+          type: object
+          properties:
+            account_holder:
+              type: object
+              properties:
+                account_holder_details:
+                  type: object
+                  properties:
+                    name:
+                      type: object
+                      properties:
+                        first_name:
+                          type: string
+                          description: First name of the account holder
+                        last_name:
+                          type: string
+                          description: Last name of the account holder
+                        salutation:
+                          type: string
+                          description: Salutation of the account holder
+                      description: Name details of the account holder
+                    country_of_birth:
+                      type: string
+                      description: Country of birth of the account holder
+                    date_of_birth:
+                      type: string
+                      format: date
+                      description: Date of birth of the account holder
+                    email:
+                      type: string
+                      format: email
+                      description: Email of the account holder
+                    num_dependents:
+                      type: integer
+                      description: Number of dependents
+                    address:
+                      type: object
+                      properties:
+                        street_1:
+                          type: string
+                          description: Street address of the account holder
+                        city:
+                          type: string
+                          description: City of the account holder
+                        state:
+                          type: string
+                          description: State of the account holder
+                        postal_code:
+                          type: string
+                          description: Postal code of the account holder
+                        country:
+                          type: string
+                          description: Country of the account holder
+                      description: Address details of the account holder
+                    same_mail_address:
+                      type: boolean
+                      description: Indicates if the mailing address is the same
+                    marital_status:
+                      type: string
+                      description: Marital status of the account holder
+                    phone:
+                      type: object
+                      properties:
+                        phone_type:
+                          type: string
+                          description: Type of phone
+                        number:
+                          type: string
+                          description: Phone number
+                        country:
+                          type: string
+                          description: Phone country
+                      description: Phone details of the account holder
+                    identification:
+                      type: object
+                      properties:
+                        citizenship:
+                          type: string
+                          description: Citizenship of the account holder
+                        issuing_country:
+                          type: string
+                          description: Issuing country for identification
+                        identification_type:
+                          type: string
+                          description: Type of identification
+                        identification_num:
+                          type: string
+                          description: Identification number
+                      description: Identification details of the account holder
+                    tax_residency:
+                      type: object
+                      properties:
+                        country:
+                          type: string
+                          description: Tax residency country
+                        identification_num:
+                          type: string
+                          description: Tax residency identification number
+                      description: Tax residency details
+                    employment_type:
+                      type: string
+                      description: Type of employment
+                    employment_details:
+                      type: object
+                      properties:
+                        employer:
+                          type: string
+                          description: Employer name
+                        employer_business:
+                          type: string
+                          description: Business of the employer
+                        occupation:
+                          type: string
+                          description: Occupation of the account holder
+                        employer_address_country:
+                          type: string
+                          description: Employer address country
+                        employer_address_state:
+                          type: string
+                          description: Employer address state
+                        employer_address_city:
+                          type: string
+                          description: Employer address city
+                        employer_address_postal_code:
+                          type: string
+                          description: Employer address postal code
+                        employer_address_street:
+                          type: string
+                          description: Employer address street
+                      description: Employment details
+                    w9:
+                      type: object
+                      properties:
+                        correct_tin_shown:
+                          type: boolean
+                          description: Indicates if correct TIN is shown
+                        not_subject_backup_withholding:
+                          type: boolean
+                          description: Indicates if not subject to backup withholding
+                        us_person:
+                          type: boolean
+                          description: Indicates if the account holder is a US person
+                  description: Account holder details
+                financial_information:
+                  type: object
+                  properties:
+                    investment_experience:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          asset_class:
+                            type: string
+                            description: Asset class
+                          knowledge_level:
+                            type: string
+                            description: Knowledge level
+                          trades_per_year:
+                            type: integer
+                            description: Number of trades per year
+                          years_trading:
+                            type: integer
+                            description: Years of trading
+                      description: Investment experience details
+                    sources_of_wealth:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          source_type:
+                            type: string
+                            description: Source type
+                          is_used_for_funds:
+                            type: boolean
+                            description: Indicates if the source is used for funds
+                          percentage:
+                            type: integer
+                            description: Percentage of the source
+                      description: Sources of wealth details
+                    annual_net_income:
+                      type: integer
+                      description: Annual net income
+                    liquid_net_worth:
+                      type: integer
+                      description: Liquid net worth
+                    net_worth:
+                      type: integer
+                      description: Net worth
+                  description: Financial information
+                regulatory_information:
+                  type: object
+                  description: Regulatory information (you can add specific properties)
+          description: Account holder information
+        accounts:
+          type: object
+          properties:
+            external_id:
+              type: string
+              description: External ID of the account
+            account_type:
+              type: string
+              description: Type of the account
+            investment_objectives:
+              type: array
+              items:
+                type: string
+              description: List of investment objectives
+            ira_beneficiaries:
+              type: array
+              items:
+                type: object
+                properties:
+                  spouse_primary_beneficiary:
+                    type: boolean
+                    description: Indicates if the spouse is the primary beneficiary
+                  first_name:
+                    type: string
+                    description: First name of the beneficiary
+                  last_name:
+                    type: string
+                    description: Last name of the beneficiary
+                  salutation:
+                    type: string
+                    description: Salutation of the beneficiary
+                  date_of_birth:
+                    type: string
+                    format: date
+                    description: Date of birth of the beneficiary
+                  address:
+                    type: object
+                    properties:
+                      street_1:
+                        type: string
+                        description: Street address of the beneficiary
+                      city:
+                        type: string
+                        description: City of the beneficiary
+                      state:
+                        type: string
+                        description: State of the beneficiary
+                      postal_code:
+                        type: string
+                        description: Postal code of the beneficiary
+                      country:
+                        type: string
+                        description: Country of the beneficiary
+                  same_mail_address:
+                    type: boolean
+                    description: Indicates if the mailing address is the same
+                  mailing_address:
+                    type: object
+                    properties:
+                      street_1:
+                        type: string
+                        description: Street address of the beneficiary
+                      city:
+                        type: string
+                        description: City of the beneficiary
+                      state:
+                        type: string
+                        description: State of the beneficiary
+                      postal_code:
+                        type: string
+                        description: Postal code of the beneficiary
+                      country:
+                        type: string
+                        description: Country of the beneficiary
+                  identification:
+                    type: object
+                    properties:
+                      citizenship:
+                        type: string
+                        description: Citizenship of the beneficiary
+                      issuing_country:
+                        type: string
+                        description: Issuing country for identification
+                      identification_type:
+                        type: string
+                        description: Type of identification
+                      identification_num:
+                        type: string
+                        description: Identification number
+                  relationship:
+                    type: string
+                    description: Relationship to the account holder
+                  external_id:
+                    type: string
+                    description: External ID of the beneficiary
+                description: Beneficiary details
+          description: Account details
+        documents:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              exec_ts:
+                type: string
+                description: Execution timestamp
+              exec_login_ts:
+                type: string
+                description: Execution login timestamp
+              signed_by:
+                type: string
+                description: Signed by
+          description: Document details
+
+
+
+
+
+
