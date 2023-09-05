@@ -24,7 +24,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/OrderObject"
+                $ref: "#/components/schemas/OrderResponseObject"
         400:
           description: Bad request
 
@@ -39,7 +39,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/OrderObject"
+              $ref: "#/components/schemas/OrderRequestObject"
       responses:
         200:
           description: Successful response
@@ -56,7 +56,28 @@ components:
         type: string
       description: API Key for authentication
   schemas:
-    OrderObject:
+    OrderRequestObject:
+      type: object
+      properties:
+        order_qty:
+          type: integer
+          description: Quantity of the order.
+          example: 100
+        order_symbol:
+          type: string
+          description: Symbol of the order.
+          example: MSFT
+        order_direction:
+          type: string
+          enum: [BUY, SELL]
+          description: Direction of the order (BUY/SELL).
+          example: BUY
+        account_id:
+          type: string
+          description: Unique identifier for the account.
+          example: AB1234
+
+    OrderResponseObject:
       type: object
       properties:
         order_uuid:
