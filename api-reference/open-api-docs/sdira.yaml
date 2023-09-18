@@ -1,0 +1,372 @@
+openapi: 3.0.0
+info:
+  title: Self-Directed IRA API
+  version: 1.0.0
+servers:
+  - url: "https://sandbox.featherhq.com"
+components:
+  schemas:
+    AccountData:
+      type: object
+      properties:
+        ssn:
+          type: string
+        email:
+          type: string
+        account_type:
+          type: string
+          enum:
+            - Traditional
+            - Roth
+            - Rollover
+            - Solo_401k
+        first_name:
+          type: string
+        last_name:
+          type: string
+        date_of_birth:
+          type: string
+          format: date
+        address:
+          type: object
+          properties:
+            street_line_1:
+              type: string
+            street_line_2:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            zip:
+              type: string
+        mailing_address_different:
+          type: boolean
+        mailing_address:
+          type: object
+          properties:
+            street_line_1:
+              type: string
+            street_line_2:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            zip:
+              type: string
+        marital_status:
+          type: string
+          enum:
+            - Single
+            - Married
+        driver_license_state:
+          type: string
+        driver_license_number:
+          type: string
+
+    InvestmentResponse:
+      type: object
+      properties:
+        investment_id:
+          type: string
+        account_id:
+          type: string
+        quantity:
+          type: integer
+        asset_id:
+          type: string
+        currency:
+          type: string
+        direction:
+          type: string
+          enum:
+            - BUY
+            - SELL
+        status:
+          type: string
+          enum:
+            - RECEIVED
+            - FUNDING
+            - PROCESSING
+            - COMPLETE
+            - REJECTED
+      example:
+        investment_id: "abcd-1234-efgh-5678"
+        account_id: "abc-123"
+        quantity: 100
+        asset_id: "MSFT"
+        currency: "USD"
+        direction: "BUY"
+        status: "RECEIVED"
+
+    AssetData:
+      type: object
+      properties:
+        id:
+          type: integer
+        status:
+          type: string
+          enum:
+            - Approved
+            - In Process
+            - On Hold For Correction
+            - On Hold For Review
+            - Rejected
+            - Draft
+        approved_at:
+          type: string
+        rejected_at:
+          type: string
+        submitted_by:
+          type: string
+        created_at:
+          type: string
+        notes:
+          type: array
+          items:
+            type: object
+        type:
+          type: string
+        input:
+          type: array
+          items:
+            type: object
+            properties:
+              new_asset_id:
+                type: string
+              new_asset_value:
+                type: string
+              asset_valuation_date:
+                type: string
+      example:
+        id: 1
+        status: "Approved"
+        approved_at: null
+        rejected_at: null
+        submitted_by: "string"
+        created_at: "string"
+        notes: [{}]
+        input:
+          - new_asset_id: "abc1234"
+            new_asset_value: "150.36"
+            asset_valuation_date: "yyyy-mm-dd"
+        submitted_at: "string"
+        updated_at: "string"
+
+paths:
+  /sdira/accounts:
+    post:
+      summary: Create a new SDIRA account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AccountData"
+      responses:
+        "201":
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AccountData"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_id:
+                    type: string
+                  error:
+                    type: string
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_id:
+                    type: string
+                  error:
+                    type: string
+
+  /sdira/accounts/{account_id}:
+    get:
+      summary: Get information about an SDIRA account
+      parameters:
+        - name: account_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Account details retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/AccountData"
+                  - type: object
+                    properties:
+                      investments:
+                        type: array
+                        items:
+                          type: string # Assuming investment IDs are strings
+        "404":
+          description: Account not found
+
+  /sdira/assets:
+    post:
+      summary: Create a new SDIRA asset
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                new_asset_id:
+                  type: string
+                new_asset_value:
+                  type: string
+                asset_valuation_date:
+                  type: string
+                  format: date
+      responses:
+        "201":
+          description: Asset created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetData"
+
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_id:
+                    type: string
+                  error:
+                    type: string
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_id:
+                    type: string
+                  error:
+                    type: string
+
+  /sdira/assets/{asset_id}:
+    get:
+      summary: Get information about an SDIRA asset
+      parameters:
+        - name: asset_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Asset details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AssetData"
+
+        "404":
+          description: Asset not found
+
+  /sdira/investments:
+    post:
+      summary: Create a new SDIRA investment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                account_id:
+                  type: string
+                payment_info:
+                  type: object
+                  properties:
+                    bank_name:
+                      type: string
+                    routing_number:
+                      type: string
+                    account_number:
+                      type: string
+                    bank_account_type:
+                      type: string
+                asset_id:
+                  type: string
+                quantity:
+                  type: string
+                currency:
+                  type: string
+                direction:
+                  type: string
+                  enum:
+                    - BUY
+                    - SELL
+      responses:
+        "201":
+          description: Investment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvestmentResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_id:
+                    type: string
+                  error:
+                    type: string
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error_id:
+                    type: string
+                  error:
+                    type: string
+
+  /sdira/investments/{investment_id}:
+    get:
+      summary: Get information about an SDIRA investment
+      parameters:
+        - name: investment_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Investment details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvestmentResponse"
+        "404":
+          description: Investment not found
