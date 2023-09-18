@@ -63,6 +63,17 @@
       ]
     },
     {
+      "group": "Alternate Asset Endpoints",
+      "pages": [
+        "api-reference/endpoint/sdira/create-a-new-sdira-account",
+        "api-reference/endpoint/sdira/get-information-about-an-sdira-account",
+        "api-reference/endpoint/sdira/create-a-new-sdira-asset",
+        "api-reference/endpoint/sdira/get-information-about-an-sdira-asset",
+        "api-reference/endpoint/sdira/create-a-new-sdira-investment",
+        "api-reference/endpoint/sdira/get-information-about-an-sdira-investment"
+      ]
+    },
+    {
       "group": "Account Endpoints",
       "pages": [
         "api-reference/endpoint/accounts/open-a-retirement-account",
